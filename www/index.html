@@ -1,0 +1,177 @@
+<!doctype html>
+<html>
+	<head>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width" />
+		<title></title>
+		
+		<!-- Kendo UI Mobile styles for all supported platforms -->
+
+		<link href="assets/css/kendo.common.min.css" rel="stylesheet" />
+		<link href="assets/css/kendo.mobile.all.min.css" rel="stylesheet" />
+
+		<link rel="stylesheet" href="assets/css/master.css">
+
+		<script type="text/javascript" src="assets/js/jquery.min.js"></script>
+
+		<!-- Kendo UI JavaScript -->
+		<script type="text/javascript" src="assets/js/kendo.mobile.min.js"></script>
+
+		<script src="phonegap.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript" src="assets/js/app.js"></script>
+
+	</head>
+	<body>
+		<div data-role="view"  data-title="Elenco Clienti">
+			<header data-role="header">
+				<div data-role="navbar">
+					<span data-role="view-title"></span>
+					<a data-align="right" data-role="button" class="nav-button" href="#index">Index</a>
+				</div>
+			</header>
+			<ul id="clienti-with-endless"></ul>
+		</div>
+		<div data-role="view" id="clientiDettaglio">
+			<header data-role="header">
+				<div data-role="navbar">
+					<a data-align="left" class="nav-button" data-role="backbutton">Back</a>
+					Cliente Selezionato
+				</div>
+			</header>
+			<ul id="clienti-dettaglio"></ul>
+		</div>
+		
+		<script type="text/x-kendo-template" id="clientiItemTemplate">
+			<div class="Clienti">
+				<a href="\#clientiDettaglio?Id=#:Id#" data-item-id="#:Id#">#:RagioneSociale#</a> &nbsp Preferito = #:Preferito#
+			</div>
+		</script>
+
+		<script type="text/x-kendo-template" id="clientidetailTemplate" >
+			<div>
+				<div class="text">#:RagioneSociale#</div>
+				<div class="text">#:Via#</div>
+			</div>        
+		</script>
+
+		<script>
+		$(document).ready(function() {
+			_clientiItemTemplate = kendo.template($("#clientiItemTemplate").html());
+			_clientiDetailsTemplate = kendo.template($("#clientidetailTemplate").text());
+			initClientiEndless();
+		});
+		function initClientiEndless() {
+            var _dsClienti = new kendo.data.DataSource({
+                serverPaging: true,
+                pageSize: 25,
+                transport: {
+                    read: {
+                        url: "http://agenzie.simtek.it/api/clienti/elenco",
+                        contentType: "application/json",
+                        type: "POST",
+                        dataType: 'json'
+                    },
+                    parameterMap: function (options) {
+                        return kendo.stringify({
+                            take: options.take,
+                            skip: options.skip,
+                            page: options.page,
+                            pageSize: options.pageSize,
+                            id: 7, //_currentUser.get().Id, 
+                            codiceAgente: 12, //_currentUser.get().CodiceAgente,
+                            filter: "",
+                            endless: 1 // il server non calcola il totale dei record perchè non c'è paginatore !!!
+                        });
+                    }
+                },
+                schema: {
+                    errors: function (response) {
+                        return response.errors;
+                    },
+                    data: function (response) {
+                        return response.data;
+                    },
+                    total: function (response) {
+                        return response.totalCount;
+                    }
+                }
+            });
+
+            $("#clienti-with-endless").kendoMobileListView({
+                dataSource: _dsClienti,
+                template: _clientiItemTemplate,
+                scrollTreshold: 30, //treshold in pixels
+                appendOnRefresh: true,
+                pullToRefresh: true,
+                pullParameters: function (item) {
+                    console.log('pullParameters');
+                    var CreatedOn;
+                    if (item) {
+                        CreatedOn = item.CreatedOn;
+                    }
+                    return {
+                        since: CreatedOn,
+                        page: 1
+                    };
+                },
+                endlessScroll: true,
+                endlessScrollParameters: function (firstItem, lastItem) {
+                    console.log('endlessScrollParameters');
+                    if (firstItem) {
+                        return {
+                            max_id: firstItem.id_str
+                        };
+                    }
+                },
+                click: function (e) {
+                    var cliente = e.dataItem;
+                    if (cliente == undefined) return;
+                   popolaDettaglioCliente(cliente.Id);
+                    //  _clienteSelezionato.set(cliente); // su cache
+                }
+            });
+
+        }
+
+        function popolaDettaglioCliente(id) {
+            var _dsDettaglio = new kendo.data.DataSource({
+                transport: {
+                    read: {
+                        url: "http://agenzie.simtek.it/api/clienti/infoCliente",
+                        contentType: "application/json",
+                        type: "POST",
+                        dataType: 'json'
+                    },
+                    parameterMap: function (options) {
+                        return kendo.stringify({
+                            tipoInfo: "Anagrafica",
+                            idCliente: id
+                        });
+                    }
+                },
+                schema: {
+                    errors: function (response) {
+                        return response.errors;
+                    },
+                    data: function (response) {
+                        return response.data;
+                    }
+                }
+            });
+            
+
+            $("#clienti-dettaglio").kendoMobileListView({
+                dataSource: _dsDettaglio,
+                template: _clientiDetailsTemplate
+            });
+
+
+        }
+
+        window.kendoMobileApplication = new kendo.mobile.Application(document.body);
+
+
+				
+		</script>
+
+	</body>
+</html>
