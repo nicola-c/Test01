@@ -8,8 +8,10 @@ document.addEventListener("deviceready", onDeviceReady, false);
 
 function onDeviceReady() {
     db = window.openDatabase("Test01DB", "1.1", "PhoneGap Test", 3000000);
-	alert("VerificaDB");
-	verificaDB();
+	//verificaDB();
+	
+	db.transaction(verificaDB, transaction_error);
+	
  //   if (dbCreated)
  //   	db.transaction(getEmployees, transaction_error);
  //   else
@@ -18,12 +20,12 @@ function onDeviceReady() {
 
 }
 
-function verificaDB() {
+function verificaDB(tx) {
 	alert("VerificaDB");
 	var sql = "select e.id, e.firstName, e.lastName, e.title, e.picture " + 
 				"from employee e " +
 				"order by e.id limit 5 offset 1";
-	db.executeSql(sql, [], verificaDB_success, errorDB);
+	tx.executeSql(sql, [], verificaDB_success, errorDB);
 }
 
 function errorDB(err) {
