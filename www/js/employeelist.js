@@ -8,12 +8,32 @@ document.addEventListener("deviceready", onDeviceReady, false);
 
 function onDeviceReady() {
     db = window.openDatabase("EmployeeDirectoryDB", "1.0", "PhoneGap Demo", 3000000);
-    if (dbCreated)
-    	db.transaction(getEmployees, transaction_error);
-    else
-    	db.transaction(populateDB, transaction_error, populateDB_success);
+	alert("VerificaDB");
+	verificaDB();
+ //   if (dbCreated)
+ //   	db.transaction(getEmployees, transaction_error);
+ //   else
+ //   	db.transaction(populateDB, transaction_error, populateDB_success);
 		
 
+}
+
+function verificaDB() {
+	var sql = "select e.id, e.firstName, e.lastName, e.title, e.picture " + 
+				"from employee e " +
+				"order by e.id limit 1";
+	tx.executeSql(sql, [], verificaDB_success);
+}
+
+function verificaDB_success(tx, results) {
+	$('#busy').hide();
+    var len = results.rows.length;
+	if (len > 0)
+    	db.transaction(getEmployees, transaction_error);
+    else {
+		alert("Creazione Nuovo DB");
+    	db.transaction(populateDB, transaction_error, populateDB_success);	
+	}
 }
 
 function transaction_error(tx, error) {
