@@ -30,7 +30,7 @@ function verificaDB_success(tx, results) {
 	alert("Fine Verifica");
 	$('#busy').hide();
     var len = results.rows.length;
-	if (len > 0) {
+	if (len > 1) {
 		alert("Len=" + len);
     	db.transaction(getEmployees, transaction_error);
 	}
