@@ -7,7 +7,7 @@ document.addEventListener("deviceready", onDeviceReady, false);
 
 
 function onDeviceReady() {
-    db = window.openDatabase("EmployeeDirectoryDB", "1.0", "PhoneGap Demo", 3000000);
+    db = window.openDatabase("Test01DB", "1.0", "PhoneGap Test", 3000000);
 	alert("VerificaDB");
 	verificaDB();
  //   if (dbCreated)
@@ -26,10 +26,13 @@ function verificaDB() {
 }
 
 function verificaDB_success(tx, results) {
+	alert("Fine Verifica");
 	$('#busy').hide();
     var len = results.rows.length;
-	if (len > 0)
+	if (len > 0) {
+		alert("Len=" + len);
     	db.transaction(getEmployees, transaction_error);
+	}
     else {
 		alert("Creazione Nuovo DB");
     	db.transaction(populateDB, transaction_error, populateDB_success);	
