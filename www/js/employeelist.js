@@ -23,21 +23,16 @@ function verificaDB() {
 	var sql = "select e.id, e.firstName, e.lastName, e.title, e.picture " + 
 				"from employee e " +
 				"order by e.id limit 5 offset 1";
-	tx.executeSql(sql, [], verificaDB_success);
+	tx.executeSql(sql, [], verificaDB_success, errorDB);
+}
+
+function errorDB(err) {
+	alert("Creazione Nuovo DB");
+	db.transaction(populateDB, transaction_error, populateDB_success);	
 }
 
 function verificaDB_success(tx, results) {
-	alert("Fine Verifica");
-	$('#busy').hide();
-    var len = results.rows.length;
-	if (len > 1) {
-		alert("Len=" + len);
-    	db.transaction(getEmployees, transaction_error);
-	}
-    else {
-		alert("Creazione Nuovo DB");
-    	db.transaction(populateDB, transaction_error, populateDB_success);	
-	}
+	db.transaction(getEmployees, transaction_error);
 }
 
 function transaction_error(tx, error) {
