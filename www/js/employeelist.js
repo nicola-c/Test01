@@ -56,7 +56,7 @@ function getEmployees(tx) {
 	//			"group by e.id order by e.id limit 25 offset 30000";
 	var sql = "select e.id, e.firstName, e.lastName, e.title, e.picture " + 
 				"from employee e " +
-				"order by e.id limit 25 offset 30000";
+				"order by e.id limit 100 offset 90000";
 	tx.executeSql(sql, [], getEmployees_success);
 }
 
