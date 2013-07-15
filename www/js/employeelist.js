@@ -19,7 +19,7 @@ function onDeviceReady() {
 }
 
 function verificaDB() {
-	alert("VerificaDB 1");
+	alert("VerificaDB");
 	var sql = "select e.id, e.firstName, e.lastName, e.title, e.picture " + 
 				"from employee e " +
 				"order by e.id limit 5 offset 1";
@@ -32,6 +32,7 @@ function errorDB(err) {
 }
 
 function verificaDB_success(tx, results) {
+	alert("Verifica OK");
 	db.transaction(getEmployees, transaction_error);
 }
 
