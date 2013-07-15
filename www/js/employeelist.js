@@ -22,7 +22,7 @@ function verificaDB() {
 	alert("VerificaDB 1");
 	var sql = "select e.id, e.firstName, e.lastName, e.title, e.picture " + 
 				"from employee e " +
-				"order by e.id limit 1 offset 1";
+				"order by e.id limit 5 offset 1";
 	tx.executeSql(sql, [], verificaDB_success);
 }
 
