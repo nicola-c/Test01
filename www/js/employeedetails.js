@@ -5,18 +5,24 @@ var id = getUrlVars()["id"];
 var db;
 
 document.addEventListener("deviceready", onDeviceReady, false);
-//var scanner= window.PhoneGap.require("cordova/plugin/BarcodeScanner");
 
 function onDeviceReady() {
 	console.log("opening database");
-    db = window.openDatabase("EmployeeDirectoryDB", "1.0", "PhoneGap Demo", 200000);
+	db = window.openDatabase("Test01DB", "1.1", "PhoneGap Test", 3000000);
+    //db = window.openDatabase("EmployeeDirectoryDB", "1.0", "PhoneGap Demo", 200000);
 	console.log("database opened");
     db.transaction(getEmployee, transaction_error);
-	//scanner = cordova.require("cordova/plugin/BarcodeScanner");
+	
 	$('.scan').bind('click',function() {
-		alert("click 2");
+		window.plugins.barcodeScanner.scan(function(result) {
+			alert("We got a barcode\n" +
+				"Result: " + result.text + "\n" +
+				"Format: " + result.format);
+		}, function(error) {
+			alert("Scanning failed: " + error);
+		});
 
-		});	
+	});	
 	
 }
 
