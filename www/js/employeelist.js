@@ -30,6 +30,8 @@ function verificaDB(tx) {
 
 function errorDB(err) {
 	alert("Creazione Nuovo DB");
+	db = null;
+	db = window.openDatabase("Test01DB", "1.1", "PhoneGap Test", 3000000);
 	db.transaction(populateDB, transaction_error, populateDB_success);	
 }
 
